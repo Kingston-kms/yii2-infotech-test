@@ -14,6 +14,14 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
+        'authManager' => [
+            'class' => \yii\rbac\DbManager::class,
+        ],
+        'user' => [
+            'class' => \yii\web\User::class,
+            'identityClass' => \app\models\User::class,
+            'enableAutoLogin' => true,
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -28,13 +36,16 @@ $config = [
         'db' => $db,
     ],
     'params' => $params,
-    /*
     'controllerMap' => [
         'fixture' => [ // Fixture generation command line.
             'class' => 'yii\faker\FixtureController',
         ],
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'newFileOwnership' => '1000:1000', # Default WSL user id
+            'newFileMode' => 0660,
+        ],
     ],
-    */
 ];
 
 if (YII_ENV_DEV) {
