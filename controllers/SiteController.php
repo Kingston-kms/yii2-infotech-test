@@ -2,7 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\Author;
+use app\models\Book;
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\db\Expression;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -61,9 +65,42 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Book::find(),
+            'pagination' => [
+                'defaultPageSize' => 12
+            ],
+        ]);
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
+    public function actionTopAuthors()
+    {
+        $years = Book::find()->select('year')
+            ->groupBy('year')->orderBy('year')->column();
+        return $this->render('years', [
+            'years' => $years
+        ]);
+    }
+
+    public function actionTopAuthorsByYear(int $year)
+    {
+        $top = Book::find()
+            ->alias('b')
+            ->select(['a.name', 'count' => new Expression('COUNT(*)')])
+            ->joinWith('authors a')
+            ->where(['b.year' => $year])
+            ->groupBy(['a.id', 'a.name'])
+            ->orderBy(['count(*)' => SORT_DESC])
+            ->limit(10)
+            ->asArray()
+            ->all();
+        return $this->render('top', [
+            'authors' => $top
+        ]);
+    }
     /**
      * Login action.
      *

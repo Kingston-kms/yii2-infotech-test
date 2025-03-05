@@ -9,7 +9,7 @@ class m250305_062810_add_users extends Migration
      */
     public function safeUp()
     {
-        $password = 'Yii2User01*';
+        $password = getenv('DEFAULT_SITE_USER_PASSWORD');
         $users = [
             [
                 'username' => 'User',
